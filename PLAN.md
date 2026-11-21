@@ -32,6 +32,22 @@ Hedef: 1000 Mbps hattı evin her yerinde verimli kullanmak, TV'de 4K remux'ları
 - [ ] ISP modemi + ayrı router varsa: çift Wi-Fi / çift NAT kontrolü (modem bridge modda olsun)
 - [ ] Gerekirse: mesh (tercihen kablolu backhaul) veya TV odasına AP
 
+### Mevcut donanım
+- Superonline Fiber 1000 Mbps, ZTE Wi-Fi 6 modem (arayüz genelde `192.168.1.1`; bazı ayarlar ISP tarafından kilitli olabilir)
+- Kablo çekilemiyor → **Powerline** değerlendiriliyor
+
+### Powerline (elektrik hattı üzerinden internet)
+- 2 adaptör: biri modemin yanında prize + Ethernet ile modeme, diğeri PC'nin yanında prize + Ethernet ile PC'ye
+- Alınacaklar: **Gigabit Ethernet portlu**, tercihen **prizli (passthrough)** model
+  - TP-Link TL-PA8010P KIT (AV1300) — iyi fiyat/performans
+  - TP-Link TL-PA7017P KIT (AV1000)
+  - Devolo Magic 2 LAN (G.hn) — daha pahalı, genelde daha stabil
+  - AV600 / 100 Mbps portlu modellerden kaçın
+- Kurallar: doğrudan duvar prizine (uzatma/akım korumalı priz YOK), mümkünse aynı sigorta hattında
+- Gerçekçi beklenti: 150-500 Mbps, ama asıl kazanç **stabil gecikme**
+- İade imkânı olan yerden al — sonuç evin elektrik tesisatına bağlı
+- Test: PC'de Wi-Fi vs powerline → hız + ping dalgalanması + takılan film
+
 ## 3. Samsung 65Q70B — kritik kısıtlar
 
 | Kısıt | Etkisi |
