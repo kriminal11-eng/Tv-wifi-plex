@@ -47,6 +47,11 @@ Hedef: 1000 Mbps hattı evin her yerinde verimli kullanmak, TV'de 4K remux'ları
 - Gerçekçi beklenti: 150-500 Mbps, ama asıl kazanç **stabil gecikme**
 - İade imkânı olan yerden al — sonuç evin elektrik tesisatına bağlı
 - Test: PC'de Wi-Fi vs powerline → hız + ping dalgalanması + takılan film
+- **Modem durumu:** dolap üstünde, banyodaki prizden çekilen uzatma ile elektrik alıyor.
+  - Çözüm: prizli adaptörü **banyodaki duvar prizine** tak → uzatmayı adaptörün prizine tak → uzatmanın yanından ince (yassı) CAT6 kabloyu modeme götür
+  - Banyo hattı ayrı sigorta / kaçak akım rölesi üzerinde olabilir → hız düşebilir, iadeli al ve test et
+  - Adaptör ıslanacak bölgeden uzak olmalı
+  - Alternatif: harici TV cihazı (Stremio/Infuse) ile PC'yi aradan çıkarmak → powerline'a gerek kalmayabilir
 
 ## 3. Samsung 65Q70B — kritik kısıtlar
 
