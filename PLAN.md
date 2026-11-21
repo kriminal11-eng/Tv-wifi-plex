@@ -165,3 +165,10 @@ Amaç: RD + AD dosyalarını Stremio'da afişli, Türkçe "Filmlerim / Dizilerim
 - [ ] TMDB (afiş, Türkçe başlık/özet) + önbellek
 - [ ] Stremio sunucusu (manifest / catalog / meta / stream / play)
 - [ ] Kurulum: Node.js, TMDB anahtarı, HTTPS (Cloudflare Tunnel veya Tailscale Funnel)
+
+### Güncelleme: ihtiyaç sadeleşti
+Videolar genelde afişsiz, sıradan dosyalar → TMDB/afiş gerekmiyor.
+İstenen: klasörleri menü gibi görmek + seçilenleri ayrı liste/playlist yapmak.
+
+1. [ ] Önce mevcut çözümü dene: Torrentio debrid kataloğundaki bir öğeyi aç → "Kütüphaneye ekle" → Library sekmesinde liste olarak görünüyor mu?
+2. [ ] Yetmezse sade eklenti: RD + AD tek katalog "Klasörlerim" (yeniden eskiye, arama, RD/AD filtresi), klasör açınca dosya listesi, birden fazla isimli liste (Favoriler, İzlenecekler…). TMDB yok, ücretsiz bulutta çalışır.
