@@ -154,3 +154,14 @@ Arayüz:
 ## Akşam sırası
 
 1. Bilgi topla (§0) → 2. Ölç (§1) → 3. Router (§2) → 4. Plex Dashboard'da takılan filmi teşhis (§4) → 5. Plex + rclone ayarları (§4-5) → 6. Tekrar ölç → 7. Gerekiyorsa cihaz kararı (§6)
+
+## 8. Kendi Stremio eklentimiz: "Debrid Kitaplığım" (yarım kaldı)
+
+Amaç: RD + AD dosyalarını Stremio'da afişli, Türkçe "Filmlerim / Dizilerim" satırlarında göstermek; film debrid'den doğrudan TV'ye akar.
+
+- [x] `addon/src/parse.js`: dosya adından film/dizi, yıl, sezon/bölüm, kalite
+- [x] `addon/src/providers/realdebrid.js`: RD kütüphanesi + oynatma linki
+- [ ] AllDebrid sağlayıcısı
+- [ ] TMDB (afiş, Türkçe başlık/özet) + önbellek
+- [ ] Stremio sunucusu (manifest / catalog / meta / stream / play)
+- [ ] Kurulum: Node.js, TMDB anahtarı, HTTPS (Cloudflare Tunnel veya Tailscale Funnel)
