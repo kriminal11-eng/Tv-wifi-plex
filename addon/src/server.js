@@ -34,6 +34,7 @@ const store = createStore({
 const UI_HTML = fs.readFileSync(path.join(__dirname, 'ui.html'), 'utf8');
 const PAGE = 100;
 const PREFIX = 'dk';
+const TYPE = 'other'; // 'other': Stremio 'İzlemeye devam et' satırına eklemez
 
 // ---- Klasör listesi (kısa önbellek) ----
 let foldersCache = { at: 0, items: [], errors: [] };
@@ -65,7 +66,7 @@ function folderMeta(f) {
   const label = providers[f.provider].label;
   return {
     id: `${PREFIX}:${f.provider}:${f.id}`,
-    type: 'series',
+    type: TYPE,
     name: f.name,
     posterShape: 'landscape',
     description: `${label} · ${formatSize(f.size)} · ${new Date(f.added).toLocaleDateString('tr-TR')}`,
@@ -77,7 +78,7 @@ function itemMeta(item) {
   const p = parseId(`${PREFIX}:${item.key}`);
   return {
     id: `${PREFIX}:${item.key}`,
-    type: 'series',
+    type: TYPE,
     name: item.name || item.key,
     posterShape: 'landscape',
     description: p ? providers[p.prov].label : '',
@@ -89,24 +90,24 @@ async function manifest() {
   const genres = Object.values(providers).map((p) => p.label);
   return {
     id: 'community.debrid.kitaplik',
-    version: '0.2.0',
+    version: '0.3.0',
     name: 'Debrid Kitaplığım',
     description: 'Real-Debrid / AllDebrid klasörleriniz ve playlistleriniz',
     resources: [
       'catalog',
-      { name: 'meta', types: ['series'], idPrefixes: [`${PREFIX}:`] },
-      { name: 'stream', types: ['series'], idPrefixes: [`${PREFIX}:`] },
+      { name: 'meta', types: [TYPE], idPrefixes: [`${PREFIX}:`] },
+      { name: 'stream', types: [TYPE], idPrefixes: [`${PREFIX}:`] },
     ],
-    types: ['series'],
+    types: [TYPE],
     idPrefixes: [`${PREFIX}:`],
     catalogs: [
       {
-        type: 'series',
+        type: TYPE,
         id: 'dk-folders',
         name: '📁 Klasörlerim',
         extra: [{ name: 'search' }, { name: 'skip' }, { name: 'genre', options: genres }],
       },
-      ...lists.map((l) => ({ type: 'series', id: `dk-list-${l.id}`, name: `⭐ ${l.name}`, extra: [{ name: 'skip' }] })),
+      ...lists.map((l) => ({ type: TYPE, id: `dk-list-${l.id}`, name: `⭐ ${l.name}`, extra: [{ name: 'skip' }] })),
     ],
     behaviorHints: { configurable: false },
   };
@@ -144,7 +145,7 @@ async function meta(id) {
   const name = p.file !== null && chosen[0] ? chosen[0].name : await folderName(p.prov, p.folder);
   return {
     id,
-    type: 'series',
+    type: TYPE,
     name,
     posterShape: 'landscape',
     description: `${providers[p.prov].label} · ${sorted.length} video`,
@@ -224,12 +225,12 @@ async function handle(req, res) {
 
   // Stremio
   if (route === 'manifest.json') return send(res, 200, await manifest());
-  if ((r = m(/^catalog\/series\/([^/]+?)(?:\/(.+))?\.json$/))) return send(res, 200, await catalog(r[1], parseExtra(r[2])));
-  if ((r = m(/^meta\/series\/(.+)\.json$/))) {
+  if ((r = m(/^catalog\/(?:series|other)\/([^/]+?)(?:\/(.+))?\.json$/))) return send(res, 200, await catalog(r[1], parseExtra(r[2])));
+  if ((r = m(/^meta\/(?:series|other)\/(.+)\.json$/))) {
     const mt = await meta(r[1]);
     return mt ? send(res, 200, { meta: mt }) : send(res, 404, { meta: null });
   }
-  if ((r = m(/^stream\/series\/(.+)\.json$/))) return send(res, 200, { streams: await streams(r[1], base) });
+  if ((r = m(/^stream\/(?:series|other)\/(.+)\.json$/))) return send(res, 200, { streams: await streams(r[1], base) });
   if (rest[0] === 'play' && rest.length === 4) {
     const [, prov, folder, key] = rest;
     if (!providers[prov]) return send(res, 404, { error: 'provider' });
