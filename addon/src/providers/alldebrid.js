@@ -80,14 +80,54 @@ function createAllDebrid(apikey, agent = 'debrid-kitaplik') {
     if (fromStatus) {
       raw = fromStatus.map((l) => ({ name: l.filename, path: l.filename, size: l.size || 0, link: l.link }));
     } else {
-      const data = await call('/v4/magnet/files', { method: 'POST', params: { id: [id] } });
-      const entry = (data.magnets || []).find((m) => String(m.id) === id) || (data.magnets || [])[0];
-      if (entry && entry.error) throw new Error(`AllDebrid files: ${entry.error.message || entry.error.code}`);
-      raw = flatten(entry ? entry.files : [], '', []);
+      raw = await filesWithFallback(id);
     }
     const files = raw.map((f, i) => ({ key: String(i), ...f })).filter((f) => isVideo(f.name));
     filesCache.set(id, files);
     return files;
+  }
+
+  function pickEntry(data, id) {
+    let list = data && (data.magnets ?? data.magnet);
+    if (list && !Array.isArray(list)) list = list.id !== undefined ? [list] : Object.values(list);
+    list = list || [];
+    return list.find((m) => String(m.id) === id) || list[0] || null;
+  }
+
+  function entryToFiles(entry) {
+    if (!entry) return [];
+    if (entry.error) throw new Error(entry.error.message || entry.error.code);
+    if (Array.isArray(entry.files) && entry.files.length) return flatten(entry.files, '', []);
+    if (Array.isArray(entry.links) && entry.links.length) {
+      return entry.links.flatMap((l) =>
+        l.link
+          ? [{ name: l.filename, path: l.filename, size: l.size || 0, link: l.link }]
+          : flatten(l.files || [], '', [])
+      );
+    }
+    return [];
+  }
+
+  // AllDebrid API sürümleri arasında farklı yollar dener
+  async function filesWithFallback(id) {
+    const attempts = [
+      ['/v4/magnet/files', 'POST', { id: [id] }],
+      ['/v4/magnet/files', 'GET', { id: [id] }],
+      ['/v4.1/magnet/files', 'POST', { id: [id] }],
+      ['/v4/magnet/status', 'GET', { id }],
+      ['/v4.1/magnet/status', 'POST', { id }],
+    ];
+    const errors = [];
+    for (const [path, method, params] of attempts) {
+      try {
+        const files = entryToFiles(pickEntry(await call(path, { method, params }), id));
+        if (files.length) return files;
+        errors.push(`${method} ${path}: boş`);
+      } catch (e) {
+        errors.push(`${method} ${path}: ${e.message}`);
+      }
+    }
+    throw new Error(`AllDebrid dosya listesi alınamadı → ${errors.join(' | ')}`);
   }
 
   async function resolve(link) {
