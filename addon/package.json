@@ -1,0 +1,12 @@
+{
+  "name": "debrid-kitaplik",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Stremio eklentisi: Real-Debrid / AllDebrid klasörleri ve playlistler",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": { "node": ">=18" }
+}

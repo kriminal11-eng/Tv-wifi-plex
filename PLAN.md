@@ -161,10 +161,11 @@ Amaç: RD + AD dosyalarını Stremio'da afişli, Türkçe "Filmlerim / Dizilerim
 
 - [x] `addon/src/parse.js`: dosya adından film/dizi, yıl, sezon/bölüm, kalite
 - [x] `addon/src/providers/realdebrid.js`: RD kütüphanesi + oynatma linki
-- [ ] AllDebrid sağlayıcısı
-- [ ] TMDB (afiş, Türkçe başlık/özet) + önbellek
-- [ ] Stremio sunucusu (manifest / catalog / meta / stream / play)
-- [ ] Kurulum: Node.js, TMDB anahtarı, HTTPS (Cloudflare Tunnel veya Tailscale Funnel)
+- [x] AllDebrid sağlayıcısı (v4.1/v4 dayanıklı — gerçek hesapla test edilecek)
+- [x] Stremio sunucusu (klasörler, dosyalar, playlist satırları, oynatma) + telefon yönetim sayfası
+- [x] Sahte API'lerle uçtan uca test (`npm test`)
+- [ ] Kurulum: Render + Upstash + anahtarlar → `addon/README.md`
+- [ ] Gerçek RD/AD hesabıyla test
 
 ### Güncelleme: ihtiyaç sadeleşti
 Videolar genelde afişsiz, sıradan dosyalar → TMDB/afiş gerekmiyor.

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Debrid Kitaplığım</title>
+<style>
+  :root { --bg:#111318; --card:#1b1e26; --line:#2a2e39; --text:#e9eaee; --muted:#9aa0ad; --accent:#6c5ce7; --danger:#e5484d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 16px; }
+  h1 { font-size:18px; margin:0 0 8px; }
+  h2 { font-size:15px; margin:20px 0 8px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  main { padding:0 16px 40px; max-width:900px; margin:0 auto; }
+  input, select, button { font:inherit; color:var(--text); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  input { width:100%; }
+  button { cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); }
+  button.danger { color:var(--danger); }
+  .row { display:flex; gap:8px; align-items:center; }
+  .row > input { flex:1; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; margin:8px 0; }
+  .card > .head { display:flex; gap:8px; align-items:center; padding:10px 12px; cursor:pointer; }
+  .card .name { flex:1; min-width:0; overflow-wrap:anywhere; }
+  .muted { color:var(--muted); font-size:13px; }
+  .badge { font-size:11px; padding:2px 6px; border-radius:6px; background:var(--line); color:var(--muted); }
+  .files { border-top:1px solid var(--line); padding:6px 12px 10px; }
+  .file { display:flex; gap:8px; align-items:center; padding:6px 0; border-bottom:1px dashed var(--line); }
+  .file:last-child { border-bottom:0; }
+  .file .name { font-size:14px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .chip { padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:var(--card); }
+  .chip.on { background:var(--accent); border-color:var(--accent); }
+  .warn { background:#3a2a10; border:1px solid #6b4b14; color:#f3c56b; padding:8px 12px; border-radius:8px; margin-top:8px; font-size:14px; }
+  a { color:#a29bfe; }
+  .toast { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); background:var(--accent); padding:8px 14px; border-radius:8px; display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📁 Debrid Kitaplığım</h1>
+  <div class="row">
+    <input id="q" placeholder="Klasör ara…" autocomplete="off">
+    <button id="refresh" title="Yenile">↻</button>
+  </div>
+  <div class="chips" id="target"></div>
+</header>
+<main>
+  <div id="warns"></div>
+
+  <h2>Playlistlerim</h2>
+  <div class="row">
+    <input id="newList" placeholder="Yeni liste adı (ör. Favoriler)">
+    <button class="primary" id="addList">Oluştur</button>
+  </div>
+  <div id="lists"></div>
+
+  <h2>Klasörler <span class="muted" id="count"></span></h2>
+  <div class="muted">Yukarıdan bir liste seçin, sonra klasör veya videonun yanındaki ➕ ile ekleyin.</div>
+  <div id="folders"></div>
+
+  <h2>Stremio'ya kur</h2>
+  <div id="install" class="muted"></div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const base = location.pathname.replace(/\/$/, '');
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const size = (b) => !b ? '' : b >= 1073741824 ? (b/1073741824).toFixed(1)+' GB' : Math.round(b/1048576)+' MB';
+let folders = [], lists = [], target = null;
+
+async function api(path, opts = {}) {
+  const res = await fetch(base + '/api/' + path, { ...opts, headers: { 'Content-Type': 'application/json' } });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || res.status);
+  return data;
+}
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 1800); }
+
+function renderTarget() {
+  $('#target').innerHTML = lists.length
+    ? lists.map((l) => `<button class="chip ${l.id === target ? 'on' : ''}" data-id="${l.id}">⭐ ${esc(l.name)}</button>`).join('')
+    : '<span class="muted">Önce aşağıdan bir playlist oluşturun.</span>';
+}
+function renderLists() {
+  if (!lists.find((l) => l.id === target)) target = lists[0]?.id || null;
+  renderTarget();
+  $('#lists').innerHTML = lists.map((l) => `
+    <div class="card">
+      <div class="head" data-toggle>
+        <span class="name">⭐ ${esc(l.name)} <span class="muted">(${l.items.length})</span></span>
+        <button data-rename="${l.id}">✏️</button>
+        <button class="danger" data-dellist="${l.id}">🗑</button>
+      </div>
+      <div class="files" hidden>
+        ${l.items.map((it) => `<div class="file"><span class="name">${esc(it.name)}</span><button class="danger" data-rm="${l.id}|${esc(it.key)}">✕</button></div>`).join('') || '<div class="muted">Boş</div>'}
+      </div>
+    </div>`).join('');
+}
+function renderFolders() {
+  const q = $('#q').value.trim().toLowerCase();
+  const items = q ? folders.filter((f) => f.name.toLowerCase().includes(q)) : folders;
+  $('#count').textContent = `(${items.length})`;
+  $('#folders').innerHTML = items.slice(0, 300).map((f) => `
+    <div class="card" data-folder="${f.provider}|${esc(f.id)}">
+      <div class="head" data-open>
+        <span class="badge">${f.provider.toUpperCase()}</span>
+        <span class="name">${esc(f.name)}<br><span class="muted">${size(f.size)}</span></span>
+        <button data-add="${f.provider}:${esc(f.id)}" data-name="${esc(f.name)}">➕</button>
+      </div>
+      <div class="files" hidden></div>
+    </div>`).join('') + (items.length > 300 ? '<div class="muted">İlk 300 gösteriliyor, aramayı daraltın.</div>' : '');
+}
+
+async function loadLists() { lists = await api('lists'); renderLists(); }
+async function loadFolders(refresh) {
+  $('#folders').innerHTML = '<div class="muted">Yükleniyor…</div>';
+  const d = await api('folders' + (refresh ? '?refresh=1' : ''));
+  folders = d.items;
+  $('#warns').innerHTML = d.errors.map((e) => `<div class="warn">⚠️ ${esc(e)}</div>`).join('');
+  renderFolders();
+}
+async function addItem(key, name) {
+  if (!target) return toast('Önce bir playlist seçin');
+  await api(`lists/${target}/items`, { method: 'POST', body: JSON.stringify({ key, name }) });
+  await loadLists();
+  toast('Eklendi: ' + (lists.find((l) => l.id === target)?.name || ''));
+}
+
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('button, [data-open], [data-toggle]');
+  if (!b) return;
+  try {
+    if (b.dataset.id) { target = b.dataset.id; renderTarget(); return; }
+    if (b.dataset.add) { e.stopPropagation(); return addItem(b.dataset.add, b.dataset.name); }
+    if (b.dataset.rm) { e.stopPropagation(); const [id, key] = b.dataset.rm.split('|'); await api(`lists/${id}/items/${encodeURIComponent(key)}`, { method: 'DELETE' }); return loadLists(); }
+    if (b.dataset.dellist) { e.stopPropagation(); if (confirm('Liste silinsin mi?')) { await api('lists/' + b.dataset.dellist, { method: 'DELETE' }); await loadLists(); } return; }
+    if (b.dataset.rename) { e.stopPropagation(); const n = prompt('Yeni ad'); if (n) { await api('lists/' + b.dataset.rename, { method: 'POST', body: JSON.stringify({ name: n }) }); await loadLists(); } return; }
+    if (b.hasAttribute('data-toggle')) { const f = b.nextElementSibling; f.hidden = !f.hidden; return; }
+    if (b.hasAttribute('data-open')) {
+      const card = b.closest('[data-folder]'); const box = card.querySelector('.files');
+      if (!box.hidden) { box.hidden = true; return; }
+      box.hidden = false; box.innerHTML = '<div class="muted">Yükleniyor…</div>';
+      const [prov, id] = card.dataset.folder.split('|');
+      const files = await api(`files/${prov}/${encodeURIComponent(id)}`);
+      box.innerHTML = files.map((f) => `<div class="file"><span class="name">${esc(f.name)} <span class="muted">${size(f.size)}</span></span><button data-add="${prov}:${esc(id)}:${esc(f.key)}" data-name="${esc(f.name)}">➕</button></div>`).join('') || '<div class="muted">Video yok</div>';
+    }
+  } catch (err) { toast('Hata: ' + err.message); }
+});
+$('#q').addEventListener('input', renderFolders);
+$('#refresh').addEventListener('click', () => loadFolders(true).catch((e) => toast(e.message)));
+$('#addList').addEventListener('click', async () => {
+  const name = $('#newList').value.trim(); if (!name) return;
+  const l = await api('lists', { method: 'POST', body: JSON.stringify({ name }) });
+  $('#newList').value = ''; target = l.id; await loadLists(); toast('Liste oluşturuldu');
+});
+
+(async () => {
+  const info = await api('info');
+  const stremio = info.manifestUrl.replace(/^https?:\/\//, 'stremio://');
+  $('#install').innerHTML = `<p><a href="${esc(stremio)}">👉 Stremio'da aç ve kur</a></p>
+    <p>Ya da Stremio › Eklentiler › arama kutusuna bu adresi yapıştırın:<br><code style="overflow-wrap:anywhere">${esc(info.manifestUrl)}</code></p>
+    <p>Yeni playlist oluşturduktan sonra TV'de satır görünmezse eklentiyi bu linkten bir kez yeniden kurun.</p>`;
+  if (!info.persistent) $('#warns').insertAdjacentHTML('afterbegin', '<div class="warn">⚠️ Kalıcı depo (Upstash) ayarlı değil: bulut sunucusu yeniden başlarsa playlistler silinebilir.</div>');
+  await Promise.all([loadLists(), loadFolders()]);
+})().catch((e) => toast('Hata: ' + e.message));
+</script>
+</body>
+</html>

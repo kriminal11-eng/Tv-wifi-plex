@@ -6,7 +6,8 @@ const VIDEO_EXT = /\.(mkv|mp4|avi|m4v|ts|m2ts|mov|wmv|webm|mpg|mpeg)$/i;
 const QUALITY_TOKEN = /\b(2160p|1080p|720p|576p|480p|4k|uhd|bluray|blu ray|brrip|bdrip|web ?dl|webrip|web|hdtv|dvdrip|remux|x264|x265|h ?264|h ?265|hevc|avc|hdr10?\+?|hdr|dv|dovi|proper|repack|extended|unrated|imax|multi|dual|turkish|tr|dublaj|altyaz[iı]|10bit|ddp?5 1|atmos|truehd|dts)\b/i;
 
 function isVideo(name) {
-  return VIDEO_EXT.test(name) && !/(^|[\s._-])sample([\s._-]|$)/i.test(name);
+  const base = String(name).split(/[\\/]/).pop();
+  return VIDEO_EXT.test(base) && !/(^|[\s._-])sample([\s._-]|$)/i.test(base);
 }
 
 function basename(p) {
