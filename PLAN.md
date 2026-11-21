@@ -69,7 +69,7 @@ Teşhis: oynatırken **Plex Web › Dashboard** → "Direct Play" mi "Transcode"
 
 > Durum: Dashboard'da **Direct Play** görüldü → transcode sebebi elendi. Darboğaz: TV Wi-Fi'si, zurg/rclone okuma hızı, debrid hızı veya 24p kasması.
 
-> Durum: Modem evin ortasında, TV yakın odada. PC ayrı odada ~700 Mbps görüyor (kablolu mu Wi-Fi mı → teyit). Kapsama iyi görünüyor → şüphe zurg/rclone/debrid ve 24p kasmasına kayıyor.
+> Durum: Modem evin ortasında, TV yakın odada. PC ayrı odada ~700 Mbps görüyor (**Wi-Fi** — evde her şey Wi-Fi'de; TV 5 GHz'e bağlı). Plex PC Wi-Fi'de → çift Wi-Fi atlaması (debrid→PC→TV aynı yayın süresini paylaşır). Öncelik: PC'yi kabloya almak.. Kapsama iyi görünüyor → şüphe zurg/rclone/debrid ve 24p kasmasına kayıyor.
 
 **Ayırıcı test (akşam ilk iş):**
 1. Takılma türü: dönen yükleme simgesi (buffer) mi, yoksa görüntü akarken mikro kasma mı? Mikro kasma → TV görüntü ayarı (§3).
