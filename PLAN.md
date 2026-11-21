@@ -173,3 +173,11 @@ Videolar genelde afişsiz, sıradan dosyalar → TMDB/afiş gerekmiyor.
 
 1. [ ] Önce mevcut çözümü dene: Torrentio debrid kataloğundaki bir öğeyi aç → "Kütüphaneye ekle" → Library sekmesinde liste olarak görünüyor mu?
 2. [ ] Yetmezse sade eklenti: RD + AD tek katalog "Klasörlerim" (yeniden eskiye, arama, RD/AD filtresi), klasör açınca dosya listesi, birden fazla isimli liste (Favoriler, İzlenecekler…). TMDB yok, ücretsiz bulutta çalışır.
+
+## Durum (22.11.2026)
+- [x] Eklenti Render'da canlı: RD + AD klasörleri, dosya listesi, oynatma, playlistler (Upstash) çalışıyor
+- [x] 'other' türü → izlenenler "İzlemeye devam et"e eklenmiyor
+- [x] Ölçüm: ev Wi-Fi'si mükemmel (PC 1.1 Gbps, telefon TV yanında 760 Mbps). Darboğaz TV'nin kendi Wi-Fi kartı (62-93 Mbps)
+- [ ] (İsteğe bağlı) Modem panelinde TV ağı 80 MHz — panel şifresi unutuldu
+- [ ] (İsteğe bağlı) Wi-Fi 6/6E harici cihaz (Fire TV Stick 4K Max / Google TV Streamer / Apple TV)
+- Öneri: TV'de REMUX ve DV olmayan 4K sürümleri seç
