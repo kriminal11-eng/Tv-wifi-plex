@@ -128,6 +128,22 @@ Başlangıç önerisi (rclone mount):
 
 Kısa yorum: TV'nin kendi uygulamasıyla DTS, DV ve PGS hep sorun çıkaracak. Asıl kalıcı çözüm ~bir harici kutu. **Önce bedava ayarları deneyelim**, yetmezse kutu.
 
+## 6b. Stremio iyileştirme (mevcut: Stremio + Torrentio)
+
+Sorunlar: klasörleme/arayüz zayıf, AllDebrid çalışmıyor.
+
+AllDebrid teşhis (akşam):
+- [ ] Hata mesajını not al
+- [ ] AllDebrid hesabı aktif mi, e-postada "yeni konum / IP onayı" var mı?
+- [ ] AllDebrid'in datacenter IP'lerini engellediği biliniyor (2024 raporu) → Torrentio sunucusu üzerinden reddediliyor olabilir
+- [ ] VPN kapalı dene; yeni API key ile Torrentio'yu yeniden yapılandır
+- [ ] Olmazsa: AIOStreams / Comet / MediaFusion gibi alternatif eklentiler, ya da PC'de self-host (ev IP'si = engel yok)
+
+Arayüz:
+- [ ] Katalog: TMDB eklentisi (Türkçe), Trakt entegrasyonu (izleme listesi / devam et)
+- [ ] Akış listesi: AIOStreams ile tek liste, kalite/boyut/debrid'e göre sıralı, düzgün etiketli
+- [ ] Daha güzel arayüz isteniyorsa (harici cihazda): Kodi + Fen Light / Umbrella, veya Apple TV + Infuse (Plex kütüphanesi)
+
 ## 7. PC'den TV'ye yansıtma
 
 - Smart View / Miracast, Wi-Fi Direct kullanır ve Wi-Fi ile yarışır → film için Plex/DLNA tercih et
