@@ -67,6 +67,15 @@ Plex TV uygulaması:
 
 Teşhis: oynatırken **Plex Web › Dashboard** → "Direct Play" mi "Transcode" mu? Transcode ise sebebi (ses/altyazı/codec) orada yazar.
 
+> Durum: Dashboard'da **Direct Play** görüldü → transcode sebebi elendi. Darboğaz: TV Wi-Fi'si, zurg/rclone okuma hızı, debrid hızı veya 24p kasması.
+
+**Ayırıcı test (akşam ilk iş):**
+1. Takılma türü: dönen yükleme simgesi (buffer) mi, yoksa görüntü akarken mikro kasma mı? Mikro kasma → TV görüntü ayarı (§3).
+2. Takılan filmin bitrate'i (Plex › Bilgi) vs TV önündeki 5 GHz hızı.
+3. Aynı filmi PC'ye **indirip** yerel kütüphaneden oynat:
+   - Yerelde akıcı → sorun zurg/rclone/debrid (§5)
+   - Yerelde de takılıyor → sorun Wi-Fi/TV (§2-3)
+
 ## 5. Zurg + rclone ayarları (akşam config'e bakacağız)
 
 Başlangıç önerisi (rclone mount):
