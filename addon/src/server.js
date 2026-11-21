@@ -26,7 +26,7 @@ if (!Object.keys(providers).length) {
 }
 
 const store = createStore({
-  upstashUrl: env.UPSTASH_REDIS_REST_URL,
+  upstashUrl: /^https:\/\//.test(env.UPSTASH_REDIS_REST_URL || '') ? env.UPSTASH_REDIS_REST_URL : null,
   upstashToken: env.UPSTASH_REDIS_REST_TOKEN,
   file: path.join(__dirname, '..', 'data', 'lists.json'),
 });
